@@ -1,0 +1,29 @@
+找到出现次数超过一半数量的那个数
+
+Leetcode 169
+
+Given an array of size n, find the majority element. The majority element is the element that appears more than ⌊ n/2 ⌋ times.
+
+You may assume that the array is non-empty and the majority element always exist in the array.
+
+Input: [2,2,1,1,1,2,2]
+Output: 2
+
+常规O(n)的方法很容易想到。建立一个字典进行统计，但是空间复杂度较高
+实际可以有空间复杂度为O（1）的方法。
+因为题目的特殊性，主要元素出现次数肯定比其他所有元素出现次数都要多。因此碰到主要元素就+1，碰到其他-1，主要元素一定是笑到最后的那个
+
+
+即Boyer-Moore Voting Algorithm
+
+class Solution:
+    def majorityElement(self, nums):
+        count = 0
+        candidate = None
+
+        for num in nums:
+            if count == 0:
+                candidate = num
+            count += (1 if num == candidate else -1)
+
+        return candidate
