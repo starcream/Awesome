@@ -1,0 +1,58 @@
+Leetcode 142
+
+Given a linked list, return the node where the cycle begins. If there is no cycle, return null.
+
+To represent a cycle in the given linked list, we use an integer pos which represents the position (0-indexed) 
+in the linked list where tail connects to. If pos is -1, then there is no cycle in the linked list.
+
+Note: Do not modify the linked list.
+
+Input: head = [3,2,0,-4], pos = 1
+Output: tail connects to node index 1
+Explanation: There is a cycle in the linked list, where tail connects to the second node.
+
+
+仍然使用快慢两个指针。首先如果有环，必然会在环上有交点
+
+设head A到环交点B的距离为a,环长c，快慢指针交汇点C到环交点距离B为x
+由于快指针跑了两倍距离
+则有 a+kc+x = 2*(a+x) ,其中 k>=1
+kc = a+ x
+a = (k-1)c + (c-x)
+k>=1
+因此重新让两个指针分别指向A和C，控制成一样速度，迟早相遇于B点
+
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode *detectCycle(ListNode *head) {
+        if(head == NULL || head->next==NULL)
+            return NULL;
+        ListNode* p1 = head;   // move at speed 1
+        ListNode* p2 = head;   // move at speed 2
+        while(p1->next!=NULL && p2->next!=NULL && p2->next->next!=NULL)
+        {
+            p1 = p1->next;
+            p2 = p2->next;
+            p2 = p2->next;
+            
+            if(p1==p2){
+                p1 = head;
+                while(p1!=p2){
+                    p1 = p1->next;
+                    p2 = p2->next;
+                }
+                return p1;
+            }
+        }
+        return NULL;  
+    }
+};
