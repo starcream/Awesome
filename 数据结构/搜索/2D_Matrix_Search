@@ -15,4 +15,31 @@ Integers in each column are sorted in ascending from top to bottom.
   [18, 21, 23, 26, 30]
 ]
 
-从左下角开始搜索
+从左下角开始搜索，小了往右走，大了往上走。复杂度为O（m+n）。
+比如找12 。 路线是18-10-13-6-9-16-12
+那么走到9时，为什么往右不往下呢？ 因为你是从下面上来的，已经经过下面的点，也就是9左下的点，这里就是13。13嫌大，那么13右侧的更没有可能了。
+整体来说比较tricky
+
+
+class Solution {
+public:
+    bool searchMatrix(vector<vector<int>>& matrix, int target) {
+        
+        if(matrix.size() == 0) return false;
+        
+        int low = 0;
+        int high = matrix[0].size()-1;
+        
+        while(low >= 0 && high >= 0 && high < matrix[0].size() && low < matrix.size())
+        {
+            if(matrix[low][high] == target)
+                return true;
+            else if(target < matrix[low][high])
+                high--;
+            else
+                low++;
+        }
+        
+        return false;
+    }
+};
