@@ -6,4 +6,89 @@ Note that it is the kth largest element in the sorted order, not the kth distinc
 Input: [3,2,3,1,2,4,5,5,6] and k = 4
 Output: 4
 
-比较容易的思路包括排序O(nlogn)  建立维护一个最大堆 O(nlogk)
+比较容易的思路包括排序O(nlogn) 维护一个最大堆 O(nlogk)
+
+最好的方法是利用快排中partition的方法
+
+partition 依据一个轴将数组分成两部分
+
+这里可以先找轴分，大于等于轴的在左侧，将轴移到分界位置(这一步不能忘记),则轴可以看做是第多少大的数。如果是第k大，结束。否则，接着partition
+class Solution:
+    def findKthLargest(self, nums: List[int], k: int) -> int:
+        
+        def exch(i,j):
+            tmp = nums[j]
+            nums[j] = nums[i]
+            nums[i] = tmp
+            
+        def partition(start,end):
+            # partition nums in [start,end] with pivot nums[start]
+            pivot = nums[start]
+            i = start
+            j = start+1  # start after pivot
+            while j<=end:
+                if nums[j] >= pivot:# larger or equal ones on the left
+                    i += 1
+                    exch(i, j)
+                    j += 1
+                else:   #less ones on the right
+                    j += 1
+            exch(start, i) # pivot in the middle,left>=pivot,right<pivot
+            return i  # the i+1th biggest one
+        
+        s = 0
+        e = len(nums)-1
+        while(s<=e):
+            index = partition(s,e)
+            if index == k-1:
+                break
+            elif index > k-1:
+                e = index-1
+            else:
+                s = index+1
+        return nums[k-1]
+    
+最优O(n),最坏O(n*n),空间O(1)
+
+可以利用随机选择pivot的方法提高性能
+
+class Solution:
+    def findKthLargest(self, nums: List[int], k: int) -> int:
+        
+        def exch(i,j):
+            tmp = nums[j]
+            nums[j] = nums[i]
+            nums[i] = tmp
+            
+        def partition(start,end):
+            # partition nums in [start,end] with pivot nums[start]
+            pos = random.randint(start,end)
+            pivot = nums[pos]
+            exch(start, pos)
+            i = start
+            j = start+1  # start after pivot
+            while j<=end:
+                if nums[j] >= pivot:# larger or equal ones on the left
+                    i += 1
+                    exch(i, j)
+                    j += 1
+                else:   #less ones on the right
+                    j += 1
+            exch(start, i) #pivot in the middle,left>=pivot,right<pivot
+            return i  # the i+1th biggest one
+        
+        s = 0
+        e = len(nums)-1
+        while(s<=e):
+            index = partition(s,e)
+            if index == k-1:
+                break
+            elif index > k-1:
+                e = index-1
+            else:
+                s = index+1
+        return nums[k-1]
+        
+        
+
+        
