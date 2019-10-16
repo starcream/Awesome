@@ -1,0 +1,99 @@
+Leetcode 621
+
+Given a char array representing tasks CPU need to do. It contains capital letters A to Z where different letters represent different tasks. Tasks could be done without original order. Each task could be done in one interval. For each interval, CPU could finish one task or just be idle.
+
+However, there is a non-negative cooling interval n that means between two same tasks, there must be at least n intervals that CPU are doing different tasks or just be idle.
+
+You need to return the least number of intervals the CPU will take to finish all the given tasks.
+
+ 
+
+Example:
+Input: tasks = ["A","A","A","B","B","B"], n = 2
+Output: 8
+Explanation: A -> B -> idle -> A -> B -> idle -> A -> B.
+
+也就是，相同任务之间必须间隔距离n，那么计算至少需要多少个interval。这里每个任务所需时间相等
+
+我的方法是尽可能优先安排数量多的任务。复杂度为O(N*K) K为常数
+
+class Solution:
+    def leastInterval(self, tasks: List[str], n: int) -> int:
+        # 注意同类型任务之间间隔至少n个
+        dic = {}
+        l = len(tasks)
+        for i in range (0, l):
+            t = tasks[i]
+            if t in dic:
+                dic[t] += 1
+            else:
+                dic[t] = 1
+        keys = list(dic.keys())
+        last = dict.fromkeys(keys, -10000)
+        cur = 0
+        while(keys):
+            """
+            选择一个值，遍历keys
+            如果cur-last[k]>=n+1,k成为候选
+            选取当前存在数量最多的k因为他们后续最有可能造成麻烦
+            如果没有候选,idle,也就是cur+1
+            """ 
+            _max = -100000
+            candidate = ""
+            for k in keys:
+                if cur-last[k] < n+1:
+                    continue
+                elif dic[k] > _max:
+                    candidate = k
+                    _max = dic[k]
+            if candidate == "":   # idle
+                cur += 1
+                continue
+            elif dic[candidate] == 1:  # candidate got 1,and will disappear from then on
+                # keys中删除
+                keys.remove(candidate)
+                cur += 1
+            else:
+                last[candidate] = cur
+                dic[candidate] -= 1
+                cur += 1
+        
+        return cur
+       
+ 实际基于观察可以找到更好的解。这里主要问题在于找出至少需要多少idle，而不需要给出一个具体的调度方案。我的方法能给出一个具体的调度方案，
+ 但是在这里显得麻烦了。
+ 假设出现最多的为A，那么以A为骨架 A...A...A...A  在n较大的情况下，idle数 = n*(count(A)-1)-length
+ 而如果有多个出现最多的任务类型，则可以将其视为整体  * 非常启发性的思想
+ AB..AB..AB  
+ 
+ 该方法复杂度仅在于统计最多数量的任务类型 ，O(n) 。 空间也只有O(1)
+ 
+ public class Solution {
+    public int leastInterval(char[] tasks, int n) {
+        int[] counter = new int[26];
+        int max = 0;
+        int maxCount = 0;
+        for(char task : tasks) {
+            counter[task - 'A']++;
+            if(max == counter[task - 'A']) {
+                maxCount++;
+            }
+            else if(max < counter[task - 'A']) {
+                max = counter[task - 'A'];
+                maxCount = 1;
+            }
+        }
+        
+        int partCount = max - 1;
+        int partLength = n - (maxCount - 1);   // 如果maxcount == 1,需要间隔n
+        int emptySlots = partCount * partLength;
+        int availableTasks = tasks.length - max * maxCount;  // 剩下多少能够填充这些slots
+        int idles = Math.max(0, emptySlots - availableTasks);
+        
+        return tasks.length + idles;
+    }
+}
+ 
+ 
+ 
+ 
