@@ -1,0 +1,57 @@
+Leetcode 114
+Given a binary tree, flatten it to a linked list in-place.
+
+For example, given the following tree:
+
+    1
+   / \
+  2   5
+ / \   \
+3   4   6
+The flattened tree should look like:
+
+1
+ \
+  2
+   \
+    3
+     \
+      4
+       \
+        5
+         \
+          6
+          
+  我的方法算不上最优，但是用时最少，空间占用也小,但是注意野指针的陷阱！！！！！！
+  
+  class Solution {
+public:
+    TreeNode* visit(TreeNode* cur){
+    
+        if(cur->left == NULL && cur->right == NULL)
+            return cur;
+        else if(cur->left == NULL){
+            return (visit(cur->right));
+        }else if(cur->right == NULL){
+            TreeNode * tmp = cur->left;
+            cur->right = cur->left;
+            cur->left = NULL;   // 一定要设置成NULL
+            return (visit(tmp));
+        }else{
+            visit(cur->left)->right = cur->right;
+            TreeNode * tmp = cur->right;
+            cur->right = cur->left;
+            cur->left = NULL;    // 一定要设置成NULL,最后的树没有左节点，不消除，这里就尾大不掉，占用空间，检测时会出现野指针！！
+            return visit(tmp);
+        }
+    
+    }
+    
+    void flatten(TreeNode* root) {
+        // 左节点先接到后边。处理左节点时会返回一个节点，右节点接在唐后面即可
+        if(root == NULL)
+            return ;
+        else
+            visit(root);
+    }
+};
