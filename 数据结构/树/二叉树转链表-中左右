@@ -55,3 +55,16 @@ public:
             visit(root);
     }
 };
+
+当然从代码简洁度上说，还有更简单的
+private TreeNode prev = null;
+
+public void flatten(TreeNode root) {
+    if (root == null)
+        return;
+    flatten(root.right);
+    flatten(root.left);
+    root.right = prev;
+    root.left = null;
+    prev = root;
+}
