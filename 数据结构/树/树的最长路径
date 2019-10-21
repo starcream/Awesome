@@ -1,0 +1,70 @@
+Leetcode 543
+
+Given a binary tree, you need to compute the length of the diameter of the tree. 
+The diameter of a binary tree is the length of the longest path between any two nodes in a tree. 
+This path may or may not pass through the root.
+
+Given a binary tree 
+          1
+         / \
+        2   3
+       / \     
+      4   5 
+      
+Return 3, which is the length of the path [4,2,1,3] or [5,2,1,3]
+
+就是数最长路径的边数。我本身写的比较繁琐
+
+class Solution {
+public:
+    pair<int, int> maxlength(TreeNode* root){
+        int left = 0, right = 0; // 不以left或者right为起点的最长长度
+        int lmax = -1, rmax = -1;  // 以left或者right为起点的最长长度
+        // leaf node
+        if(root->left == NULL && root->right == NULL)
+            return (make_pair(0,0));
+        if(root->right != NULL){
+            pair<int,int> p = maxlength(root->right);
+            rmax = p.first;
+            right = p.second;
+        }
+        if(root->left != NULL){
+            pair<int,int> q = maxlength(root->left);
+            lmax = q.first;
+            left = q.second;
+        }
+        int maxbranch = 1+(lmax>rmax?lmax:rmax);
+        int maxall = left>right?left:right;
+        maxall = maxall>(lmax+rmax+2)?maxall:(lmax+rmax+2);
+        return make_pair(maxbranch,maxall);
+    }
+    
+    int diameterOfBinaryTree(TreeNode* root) {
+        // 对每个节点，返回两个值，穿过它的包含左右子树的最长串长度，和以他为起点的最长串长度
+        if(root == NULL)
+            return 0;
+        pair<int,int> ans = maxlength(root);
+        int maxl = ans.second;
+        int maxbranch = ans.first;
+        return (maxl>maxbranch?maxl:maxbranch);
+    }
+};
+
+
+实际有更好的方法。对于不以某节点为起点的最长路径，不用返回。在类中维护一个最大值，每次更新即可
+
+class Solution {
+    int ans;   //  维护的最大值
+    public int diameterOfBinaryTree(TreeNode root) {
+        ans = 1;
+        depth(root);
+        return ans - 1;
+    }
+    public int depth(TreeNode node) {
+        if (node == null) return 0;
+        int L = depth(node.left);
+        int R = depth(node.right);
+        ans = Math.max(ans, L+R+1);
+        return Math.max(L, R) + 1;
+    }
+}
