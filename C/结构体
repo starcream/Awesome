@@ -1,0 +1,21 @@
+enum ColorType{red,blue,yellow};
+ColorType q;
+q= yellow;
+如果默认,red=0,blue=1,yellow=2
+也可以指定赋值
+输出时最好 转换为int(q)或者cout<<static_cast<int>(q);
+
+struct Student{
+        int id;
+        bool sex;
+};
+
+Student s1;
+s1.id = ....
+
+struct 一般还是用来声明简单的数据结构
+
+union mytype{
+  int i;
+  float f;
+}; 共享内存
