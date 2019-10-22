@@ -14,4 +14,31 @@ C++ runs as executable native machine code, directly on the hardware/OS
 
 Java: field&method
 C++: data member &member functions  
-不同于Java，C++允许不在类中定义函数
+不同于Java，C++允许不在类中定义函数。特殊地，main函数在类外，java中定义在类里
+
+C++ main函数，如果正常返回，应该返回0
+需要命令行参数时，
+
+int main(int argc, char*argv[])
+
+argument count ; argument vector
+C-style string : terminated with a null
+
+cout - Consol Output
+<< output stream operators
+std:: --> 告诉编译器 cout属于命名空间std
+命名空间 -- 封装的代码 编译器在带的C++、C函数，类等都封装在std中
+
+赋值运算符 - 右关联
+输入输出的流运算符 - 左关联
+流运算符是重载的，因此输入输出可以针对多种不同类型
+
+如果对一个函数先使用，后定义，一定在前面声明函数原型。函数原型扩展函数的作用域，通常放在头文件中。
+
+g++ foo.cpp -o foo 
+g++ 编译默认产生 a.out。可以用-o指定名称
+
+g++ -c a.cpp
+g++ -c b.cpp
+g++ a.o b.o 
+即对文件单独编译，再链接。好处是，如果只改变一个文件，不需要在全部重新编译。
