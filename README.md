@@ -1,2 +1,2 @@
 # Awesome
- CS Skill
+ CS Skill   持续更新
