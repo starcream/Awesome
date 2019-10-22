@@ -11,5 +11,41 @@
 
 C++中的宏常常用inline函数来代替
 
+#undef a
+去宏
+
+
+#ifdef Debug
+...
+#else
+...
+#endif
+...
+
+条件编译非常重要的一点运用在于，避免多次include 一个头文件
+
+/* apple.h */
+# ifndef APPLE_H
+# define APPLE_H
+.....
+
+/* fruit.h */
+# ifndef FRUIT_H
+# define FRUIT_H
+
+# include "apple.h"
+......
+
+/* main.cpp */
+#include "apple.h"
+#include "fruit.h"
+.....
+
+也方便移植
+#ifdef WIN32
+....
+#elif defined CYGWIN
+....
+# endif
 
 
