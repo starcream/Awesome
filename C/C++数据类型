@@ -1,0 +1,18 @@
+C++ 依赖平台 所以int，long等字节长度不固定
+bool，没有boolean 和byte
+
+C++ 显示声明数组时，数组长度不能是变量
+
+#include<cstring>
+c-string  '\0'  char  A[20] = "66ygkj899"
+而如果 char B[6] = {'a','b','v','e','d','o'};  没有'\0'结尾，也不能直接cout
+strcpy(old,new) ,strcat 
+cout<<A<<endl;
+
+string 对象
+#include<string>
+string str1;
+str1 = "6d7ug";
+str2 = '798hbbb';
+str3 = str1+str2;
+cout<<str3<<endl;
