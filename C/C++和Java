@@ -1,0 +1,17 @@
+编程 - 写指令让计算机完成指定任务
+
+不同的编程语言 - 语法和范式的差异   - 输入输出，变量和数据类型， 控制结构
+
+C++ 面向过程，面向对象，也可以泛型编程
+Java 在web应用上运用较多 ，C++多用于系统软件编写，嵌入式等等
+Java 慢，不适合编游戏和写复杂应用；安全，适合网络编程
+
+JVM - Java Virtual machine  Java语言使用Java虚拟机屏蔽了与具体平台相关的信息，使得Java语言编译程序只需生成在Java虚拟机上运行的目标代码（字节码），
+就可以在多种平台上不加修改地运行。Java虚拟机在执行字节码时，把字节码解释成具体平台上的机器指令执行。这就是Java的能够“一次编译，到处运行”的原因。
+
+C++ runs as executable native machine code, directly on the hardware/OS
+所以C++更快，并且可以更加直接地控制系统资源  -- 也意味着得更加谨慎
+
+Java: field&method
+C++: data member &member functions  
+不同于Java，C++允许不在类中定义函数
