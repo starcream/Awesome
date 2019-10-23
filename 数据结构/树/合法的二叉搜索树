@@ -1,0 +1,25 @@
+Leetcode 98
+Given a binary tree, determine if it is a valid binary search tree (BST).
+
+Assume a BST is defined as follows:
+
+The left subtree of a node contains only nodes with keys less than the node's key.
+The right subtree of a node contains only nodes with keys greater than the node's key.
+Both the left and right subtrees must also be binary search trees.
+
+    5
+   / \
+  1   4
+     / \
+    3   6
+
+Input: [5,1,4,null,null,3,6]
+Output: false
+Explanation: The root node's value is 5 but its right child's value is 4.
+
+基础的想法很容易想到，为每个节点设置上下界。父子节点上下界之间显然存在一些限定关系。
+但麻烦之处在于，最原始的上下界不好给，需要比INT_MIN小，INT_MAX大。。。 最好的处理方法是，将上下界设置成double类型
+
+有更好的解决方法。二叉搜索数左小右大，应该联想到Inorder Traversal  中序遍历
+中序遍历的结果应该是递增的。。。如果不递增，就不合法。
+时间复杂度为O(n)，而空间甚至O(1)即可。不需要保存已经比较的结果
