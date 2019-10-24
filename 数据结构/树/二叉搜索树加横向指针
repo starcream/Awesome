@@ -54,3 +54,22 @@ public:
     }
     
 };
+
+有更简洁并且直观的做法
+void connect(TreeLinkNode *root) {
+    if (root == NULL) return;
+    TreeLinkNode *pre = root;
+    TreeLinkNode *cur = NULL;
+    while(pre->left) {
+        cur = pre;
+        while(cur) {
+            cur->left->next = cur->right;
+            if(cur->next) cur->right->next = cur->next->left;
+            cur = cur->next;
+        }
+        pre = pre->left;
+    }
+}
+
+pre指针一路沿着阶梯左下，然后cur逐次遍历高层已处理的过的节点，来处理下一层节点之间的连接。
+无非是自己俩儿子的连接，自己右儿子和隔壁家左儿子的连接
