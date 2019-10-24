@@ -1,0 +1,56 @@
+Leetcode 116 
+You are given a perfect binary tree where all leaves are on the same level, and every parent has two children. The binary tree has the following definition:
+
+struct Node {
+  int val;
+  Node *left;
+  Node *right;
+  Node *next;
+}
+Populate each next pointer to point to its next right node. If there is no next right node, the next pointer should be set to NULL.
+
+Initially, all next pointers are set to NULL
+
+就是一个完美二叉搜索树，每个节点都有两个非空子节点，除了最后一列
+横向加上next指针，每一level的最后一个节点的next指针保持为NULL
+
+一行一行处理，BFS，使用队列
+注意，C++中队列，栈等结构，pop()删除元素但不返回，front()/top()返回元素而不删除
+另外，pow()函数结构默认返回时double，因此与int比较需要类型转换
+
+class Solution {
+    
+public:
+    Node* connect(Node* root) {
+        if(!root)
+            return NULL;
+        // 按深度来。维护一个last和一个cur
+        queue< Node* > q;
+        q.push(root);
+        Node* last = NULL;
+        Node* cur ;
+        int count = 1, level = 1;
+        while(!q.empty()){
+            cur = q.front();
+            q.pop();
+            if(cur->left){
+                q.push(cur->left);
+                q.push(cur->right);    
+            }
+            count ++;
+            if(count == int(pow(2,level)))
+                level ++; // cur node is end of this level
+            
+            if(last == NULL)  // first row
+                ;
+            else if(count == int(pow(2,level-1))+1)
+                last->next = NULL; //cur is start of new level
+            else
+                last->next = cur;
+            last = cur; 
+        }
+        cur->next = NULL;
+        return root;
+    }
+    
+};
