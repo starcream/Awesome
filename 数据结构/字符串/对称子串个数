@@ -1,0 +1,64 @@
+Leetcode 647
+
+Given a string, your task is to count how many palindromic substrings in this string.
+
+The substrings with different start indexes or end indexes are counted as different substrings even they consist of same characters.
+
+Example 1:
+
+Input: "abc"
+Output: 3
+Explanation: Three palindromic strings: "a", "b", "c".
+ 
+
+Example 2:
+
+Input: "aaa"
+Output: 6
+Explanation: Six palindromic strings: "a", "a", "a", "aa", "aa", "aaa".
+
+基本思想是往两边扩张，判断是否为对称。当然扩张的起点奇偶有别
+
+我的做法
+class Solution:
+    
+    def countSubstrings(self, s: str) -> int:
+        n = len(s)
+        count = n
+        p = [[False for i in range(0,n)] for i in range(0,n)]
+        # start == end 
+        for i in range(0,n):
+            p[i][i] = True
+        # start +1 == end
+        for i in range(0,n-1):
+            p[i][i+1] = (s[i]==s[i+1])
+            if p[i][i+1]:
+                count += 1
+                
+        for interval in range(2,n):   # interval in [2,n-1]
+            for i in range(0,n-interval):  # start pos
+                p[i][i+interval] = (p[i+1][i-1+interval] and (s[i]==s[i+interval]))
+                if p[i][i+interval]:
+                    count += 1
+        return count
+        
+有点源于dp，占用空间有点多。实际不需要存储之前每次左右扩张的结果，只要保存上一次就可以
+
+官方解法是选择一个中心起点，可奇可偶，然后向两边努力扩张。为了能实现可奇可偶，选择center范围扩大一倍
+
+class Solution(object):
+    def countSubstrings(self, S):
+        N = len(S)
+        ans = 0
+        for center in xrange(2*N - 1):
+            left = center / 2
+            right = left + center % 2   # center为奇数，起点就为[i,i+1]
+            while left >= 0 and right < N and S[left] == S[right]:
+                ans += 1
+                left -= 1
+                right += 1
+        return ans
+
+
+
+
