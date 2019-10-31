@@ -149,7 +149,9 @@ public class Solution {
            //are one step "farther away" from completing an anagram. So we must increment diff.
            if (chars[temp-'a'] >= 0){
                diff++;
-           }
+           }  // 这样理解。start位置的字母已经被遍历过了。如果不是p中字母，自然统计为负数；如果是p中字母，为负数，说明出现次数多了，
+           // 之前不一定是在start这里扣成负数，但是start得为他的同族字母还债。处理他同族字母的时候可能没有减小diff，因此这里也不恢复
+           // 核心的一点:对26个字母的统计是客观的。不受diff大小的影响。diff是p和当前窗口字符串的差异值。
            
            //Increment the hash value for this character, because it is no longer contained in the window
            chars[temp-'a']++;
