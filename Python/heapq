@@ -10,4 +10,4 @@ heapreplace(heap, item)  # 用item代替堆顶元素，并返回被取代元素�
 
 nlargest(n, iterable, key=None)  # 返回堆中最大的 n 个元素。
 nsmallest(n, iterable, key=None) # 返回堆中最小的 n 个元素。
-iterable 可以是字典的key集合
+iterable 可以是字典的key集合 ,key可以是字典或者Counter的get method
