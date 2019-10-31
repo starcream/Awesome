@@ -1,0 +1,11 @@
+默认最小堆 
+
+a = [1,3,5,9]
+heapify(a)   # a 还是列表,但是有了最小堆的性质
+
+heappush(heap, item)：将 item 元素加入堆。    # heappush(a,6)
+heappop(heap)：将堆中最小元素弹出。   # heappush(a)
+nlargest(n, iterable, key=None)：返回堆中最大的 n 个元素。
+nsmallest(n, iterable, key=None)：返回堆中最小的 n 个元素。
+
+iterable 可以是字典的key集合
