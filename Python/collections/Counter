@@ -1,0 +1,30 @@
+Counter ，很适合词频统计， 做频率相关的任务
+
+from collections import Counter
+colors = ['red', 'blue', 'red', 'green', 'blue', 'blue']
+c = Counter(colors)
+print (dict(c))  # 转化成字典
+
+d = {....}
+c = Counter(d)  # 字典转化为Counter
+
+增强易读性
+
+list(c.elements())  # 重新得到colors
+
+Counter('abracadabra').most_common(3)  # 返回列表[(k,v),(k2,v2)]
+                                      
+小结： 初始化可以利用列表，字典和字符串
+可以转化为字典，可以转化回列表(elements())
+可以非常方便的统计前k频率的key
+
+有些和字典一样的特性
+c = Counter(['eggs', 'ham'])
+c['bacon']                              # 不存在就返回0
+#0
+
+# 删除元素
+c['sausage'] = 0                        # counter entry with a zero count
+del c['sausage']   
+
+最有趣的，Counter之间可以加减，取交和并，都是频率意义上的
