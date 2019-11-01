@@ -1,0 +1,71 @@
+Leetcode 139
+
+Given a non-empty string s and a dictionary wordDict containing a list of non-empty words, determine if s can be segmented into a space-separated sequence of one or more dictionary words.
+
+Note:
+
+The same word in the dictionary may be reused multiple times in the segmentation.
+You may assume the dictionary does not contain duplicate words.
+Example 1:
+
+Input: s = "leetcode", wordDict = ["leet", "code"]
+Output: true
+Explanation: Return true because "leetcode" can be segmented as "leet code".
+Example 2:
+
+Input: s = "applepenapple", wordDict = ["apple", "pen"]
+Output: true
+Explanation: Return true because "applepenapple" can be segmented as "apple pen apple".
+             Note that you are allowed to reuse a dictionary word.
+Example 3:
+
+Input: s = "catsandog", wordDict = ["cats", "dog", "sand", "and", "cat"]
+Output: false
+
+简而言之，就是判断词典中的词能否组合成一个句子。感觉在无标点的字符串中进行单词分割很有用。
+最开始的思想是直接利用startswith去递归调用，看看剩下的句子能不能okay
+可惜超时，因为多了很多次重复的比较
+后来想到一个bottom-up的DP方法。
+class Solution:
+    def wordBreak(self, s: str, wordDict: List[str]) -> bool:
+        # DP Bottom UP
+        # [i, j] = True if Sij is in Dict or you can cut them in half
+        
+        r = [[False for x in s ] for x in s]
+        n = len(s)
+        for i in range(0, n):
+            r[i][i] = (s[i] in wordDict)
+            
+        interval = 0
+        for interval in range(1, n):
+            for i in range(0, n-interval):
+                if (s[i:i+interval+1] not in wordDict):
+                    for k in range(i, i+interval):
+                        if (r[i][k] and r[k+1][i+interval]):
+                            r[i][i+interval] = True
+                            break
+                else:
+                    r[i][i+interval] = True
+        #print(r)            
+        return r[0][n-1]
+也比较慢。有三重循环。r[i][j]代表字符串片段s[i:j]能不能被成功单词化。
+这里有一维dp的方法。f[i]代表s[0:i]能不能被成功单词化。如果可以，那么[0,i]中必然能找到一个分界点j，f[j]==True并且s[i,j]是个单词
+以后想DP时，先考虑一下一维的能不能解决。自底向下复杂度太高了
+
+public class Solution {
+    public boolean wordBreak(String s, Set<String> dict) {
+        
+        boolean[] f = new boolean[s.length() + 1];
+        f[0] = true;
+        for(int i=1; i <= s.length(); i++){
+            for(int j=0; j < i; j++){
+                if(f[j] && dict.contains(s.substring(j, i))){
+                    f[i] = true;
+                    break;
+                }
+            }
+        }
+        
+        return f[s.length()];
+    }
+}
