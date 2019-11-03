@@ -1,0 +1,57 @@
+Leetcode 238
+
+Given an array nums of n integers where n > 1,  return an array output such that output[i] is equal to the product of all the elements of nums except nums[i].
+
+Example:
+
+Input:  [1,2,3,4]
+Output: [24,12,8,6]
+Note: Please solve it without division and in O(n).
+
+Follow up:
+Could you solve it with constant space complexity?
+
+很显然的做法是用总乘积除以当前位置的数。但是题目要求不能用除法，并且还需要在O(n)时间内
+
+1 2 3 4 5
+
+可以算两个方向的当前连乘积。  P(3) = (1*2) * (4*5)
+
+class Solution:
+    def productExceptSelf(self, nums: List[int]) -> List[int]:
+        # 不允许除法噢
+        n = len(nums)
+        p = [1 for x in nums]
+        q = p.copy()
+        ans = p.copy()
+        p[0] = nums[0]
+        q[n-1] = nums[n-1]
+        for i in range(1, n):
+            p[i] = p[i-1] * nums[i]
+        for i in range(n-2, -1, -1):
+            q[i] = q[i+1] * nums[i]
+            
+        ans[n-1] = p[n-2]
+        ans[0] = q[1]
+        for i in range(1, n-1):
+            ans[i] = p[i-1]*q[i+1]
+            
+        return ans
+                    
+不另外开辟空间的。逻辑复杂一些
+public class Solution {
+public int[] productExceptSelf(int[] nums) {
+    int n = nums.length;
+    int[] res = new int[n];
+    res[0] = 1;
+    for (int i = 1; i < n; i++) {
+        res[i] = res[i - 1] * nums[i - 1];
+    }
+    int right = 1;
+    for (int i = n - 1; i >= 0; i--) {
+        res[i] *= right;     // 利用 right 而不是另外开辟一个反向连乘的数组
+        right *= nums[i];
+    }
+    return res;
+}
+
