@@ -1,0 +1,44 @@
+Leetcode 560
+
+Given an array of integers and an integer k, you need to find the total number of continuous subarrays whose sum equals to k.
+
+Example 1:
+Input:nums = [1,1,1], k = 2
+Output: 2
+Note:
+The length of the array is in range [1, 20,000].
+The range of numbers in the array is [-1000, 1000] and the range of the integer k is [-1e7, 1e7].
+
+
+我开始使用了很蠢的方法。对向左和向右各设置了累计和。实际只需要向左各个位置的累计和，连续子序列的和 = sum[j]-sum[i]
+更进一步的，甚至不需要sum数组来记录。循环遍历start 和 end，每次内循环时，计算sum即可。时间O(n^2),空间O(1)
+
+public class Solution {
+    public int subarraySum(int[] nums, int k) {
+        int count = 0;
+        for (int start = 0; start < nums.length; start++) {
+            int sum=0;
+            for (int end = start; end < nums.length; end++) {
+                sum+=nums[end];
+                if (sum == k)
+                    count++;
+            }
+        }
+        return count;
+    }
+}
+
+和暴力法的主要区别在于利用了sum。暴力法直接遍历start和end，然后每次重复计算start和end之间的和，O(n^3)
+
+还有时间上更短的方法。计算从0开始的累计和sum，并进行统计，count[sum].那么到后面。count[sum'-k]就是sum'位置处的要增加的答案数。因为
+This is because at time t, A[0] + A[1] + ... + A[t-1] = W, and there are count[V] indices j with j < t-1 and A[0] + A[1] + ... + A[j] = V. 
+Thus, there are count[V] subarrays A[j+1] + A[j+2] + ... + A[t-1] = K
+def subarraySum(self, A, K):
+    count = collections.Counter()
+    count[0] = 1  # 细节
+    ans = su = 0
+    for x in A:
+        su += x
+        ans += count[su-K]   # su==k，加上1
+        count[su] += 1
+    return ans
