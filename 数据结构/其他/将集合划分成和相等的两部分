@@ -1,0 +1,49 @@
+Leetcode 416
+
+Given a non-empty array containing only positive integers, find if the array can be partitioned into two subsets such that the sum of elements in both subsets is equal.
+
+Note:
+
+Each of the array element will not exceed 100.
+The array size will not exceed 200.
+ 
+Example 1:
+Input: [1, 5, 11, 5]
+Output: true
+Explanation: The array can be partitioned as [1, 5, 5] and [11].
+ 
+Example 2:
+Input: [1, 2, 3, 5]
+Output: false
+Explanation: The array cannot be partitioned into equal sum subsets.
+
+我的方法。%99和%100.出乎意料的好。
+class Solution:
+    def canPartition(self, nums: List[int]) -> bool:
+        # 【11,5,5,2,2,1】
+        n = len(nums)
+        S = 0
+        for x in nums:
+            S += x
+        if S%2 != 0 or n < 2:  # 必须是2的倍数并且得至少有两个元素
+            return False
+        S = int(S/2)
+        nums.sort(reverse=True)   # 降序排列
+        S -= nums[0] # there is always one half containing the biggest one  # 骚操作，减去最大元素
+        
+        def helper(S, index, n):   
+            # can S be the sum of a subset with elements in [index, n-1]
+            if S < 0 :
+                return False
+
+            if S == 0:   # 第一次调用不可能为0.因为都是正整数并且有至少两个，而我们只减去了一个
+                return True
+            
+            ans = False
+            for i in range(index, n):
+                ans = ans or helper(S-nums[i], i+1, n)  # 元素不能重复使用，所有要往前推进 {i+1}
+                if ans == True:  # 有正确解就及时返回
+                    return ans
+            return ans
+        
+        return helper(S, 1, n)
