@@ -47,3 +47,85 @@ class Solution:
             return ans
         
         return helper(S, 1, n)
+
+
+
+
+其实有点像0-1背包问题。也就是取或者不取 。第一维是用0-i的数，第二维是和(sum).DP代表能不能达到这个和
+ dp[i][j] = dp[i-1][j] || dp[i-1][j-nums[i]]
+ 优化一下，可以只用一维
+ dp[i] = dp[i] || dp[i-num];
+ 
+ public boolean canPartition(int[] nums) {
+    int sum = 0;
+    
+    for (int num : nums) {
+        sum += num;
+    }
+    
+    if ((sum & 1) == 1) { // 判断奇偶
+        return false;
+    }
+    sum /= 2;
+    
+    int n = nums.length;
+    boolean[] dp = new boolean[sum+1];  // 花费空间也不少
+    Arrays.fill(dp, false);
+    dp[0] = true;
+    
+    for (int num : nums) {   // N *SUM 的复杂度，感觉比我还高嘞
+        for (int i = sum; i > 0; i--) {
+            if (i >= num) {
+                dp[i] = dp[i] || dp[i-num];
+            }
+        }
+    }
+    
+    return dp[sum];
+}
+
+
+最后，还有一种类似DP但是使用bit操作的解法
+class Solution(object):
+    def canPartition(self, nums):
+        sum_val = 0
+        bits = 1
+        for num in nums:
+            sum_val += num
+            bits |= bits << num
+        return (not sum_val % 2 == 1) and (bits >> (sum_val // 2)) & 1 == 1
+
+Let me try to explain this solution a little bit.First, let me show you a normal DP solution,
+
+class Solution(object):
+    def canPartition(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: bool
+        """
+        sum_val = sum(nums)
+        if sum_val % 2 == 1:
+            return False
+        target = sum_val // 2
+        dp = [False] * (sum_val + 1)
+        dp[0] = True
+        for num in nums:
+            next_dp = [False] * (sum_val + 1)
+            for j in xrange(len(dp)):
+                if dp[j]:
+                    next_dp[j + num] = True
+                    next_dp[j] = True
+            dp = next_dp
+        return dp[target]
+dp[j] represents whether a specific sum value j can be gotten from (a subset of) nums or not. The basic idea is, if dp[j] is achievable, then dp[i+num] is achievable if we pick up the number num, and dp[i] is also achievable if we don't. I learnt this idea from https://discuss.leetcode.com/topic/76264/short-java-dp-solution-with-explanation
+
+Let's get back to the solution with bitset. It replaces the dp table with a bitset, a bit bits[j] has the same meaning as dp[j].
+
+With the advantage of bitset, the inner loop of traversing dp, condition check of dp[j] and operations on next_dp are all transformed to bitwise shift operation, which is much more efficient.
+
+A tiny example, nums=[2, 3, 5], initial bits is 1, traversing through nums
+# 左移num位。之前是1的位置，移动num位后还是1。这个方法找出所有能达到的值，但是因为是用bit运算，很牛逼
+when num=2, bits=101, which represents nums can sum to 0 and 2
+when num=3, bits=101101, which represents nums can sum to 0, 2, 3, 5
+when num=5, bits=10110101101, which represents nums can sum to 0, 2, 3, 5, 7, 8, 10
+Finally, we just need to check if bits[5] is 0 or 1
