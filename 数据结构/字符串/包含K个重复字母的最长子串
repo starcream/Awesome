@@ -1,0 +1,59 @@
+Leetcode 395
+Find the length of the longest substring T of a given string (consists of lowercase letters only) such that every character in T appears no less than k times.
+
+Example 1:
+Input:
+s = "aaabb", k = 3
+Output:
+3
+The longest substring is "aaa", as 'a' is repeated 3 times.
+
+Example 2:
+Input:
+s = "ababbc", k = 2
+Output:
+5
+The longest substring is "ababb", as 'a' is repeated 2 times and 'b' is repeated 3 times.
+
+我的方法。出现的字符就得超过K次。如果所有字符都超过K次，这个字符串就okay了。如果有不符合的，那么找出他们的位置，
+他们一定将原来的字符串划分成一些子串。对这些子串递归操作。
+class Solution:
+    def longestSubstring(self, s: str, k: int) -> int:
+        n = len(s)
+        # find those letters who will be never be considered
+        c = collections.Counter(s)
+        d = []
+        for x in c:
+            if c[x] < k:
+                d.append(x)
+        if len(d) == 0:
+            return n    # string is qualified
+        # if not qualified, some of its substring maybe qualified
+        start = 0
+        end = 0
+        ans = 0
+        # search those possible substrings[start, end]
+        while start < n and end < n:
+            while start< n and s[start] in d:
+                start += 1
+            # s[start] is valid   
+            end = start
+            while end < n and s[end] not in d:
+                end += 1   # s[end] is not valid
+
+            if end - start >=k:   # length at least k
+                ans = max(ans,self.longestSubstring(s[start:end], k))
+            
+            start = end
+                
+        return ans
+
+# 在python和Java中都有很方便的split函数
+from collections import Counter
+class Solution:
+    def longestSubstring(self, s, k):
+        ctr = Counter(s)
+        for c,v in ctr.items():
+            if v<k:
+                return max([self.longestSubstring(sub, k) for sub in s.split(c) if len(sub)>=k] or [0])
+        return len(s)
