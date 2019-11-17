@@ -1,0 +1,79 @@
+Leetcode 289
+
+According to the Wikipedia's article: "The Game of Life, also known simply as Life, is a cellular automaton devised by the British mathematician John Horton Conway in 1970."
+
+Given a board with m by n cells, each cell has an initial state live (1) or dead (0). 
+Each cell interacts with its eight neighbors (horizontal, vertical, diagonal) using the following four rules 
+(taken from the above Wikipedia article):
+
+Any live cell with fewer than two live neighbors dies, as if caused by under-population.
+Any live cell with two or three live neighbors lives on to the next generation.
+Any live cell with more than three live neighbors dies, as if by over-population..
+Any dead cell with exactly three live neighbors becomes a live cell, as if by reproduction.
+Write a function to compute the next state (after one update) of the board given its current state. 
+The next state is created by applying the above rules simultaneously to every cell in the current state, 
+where births and deaths occur simultaneously.
+
+Example:
+
+Input: 
+[
+  [0,1,0],
+  [0,0,1],
+  [1,1,1],
+  [0,0,0]
+]
+Output: 
+[
+  [0,0,0],
+  [1,0,1],
+  [0,1,1],
+  [0,1,0]
+]
+Follow up:
+
+Could you solve it in-place? Remember that the board needs to be updated at the same time: You cannot update some cells first and 
+then use their updated values to update other cells.
+In this question, we represent the board using a 2D array. In principle, the board is infinite, which would cause problems 
+when the active area encroaches the border of the array. How would you address these problems?
+常规解决方法:
+class Solution:
+    def gameOfLife(self, board: List[List[int]]) -> None:
+        row = len(board)
+        col = len(board[0])
+        neighbours = [(1,0),(1,1),(1,-1),(0,1),(0,-1),(-1,0),(-1,1),(-1,-1)]   # 棋盘类问题神解
+        for i in range(row):
+            for j in range(col):
+                live = 0
+                for neighbour in neighbours:
+                    r = i + neighbour[0]
+                    c = j + neighbour[1]
+                    if(r<row and r>=0) and(c<col and c>=0) and abs(board[r][c])==1:
+                        live += 1
+                if board[i][j] == 1 and (live<2 or live>3):
+                    board[i][j] = -1 # used to be alive and will die   # 技巧，记录上一次的状态。绝对值为1代表为之前是1
+                if board[i][j] == 0 and live == 3:
+                    board[i][j] = 2 # used to die ,will live      # 当前为正值代表下一轮为
+                        
+        # finally adjust the state of cells
+        for r in range(row):
+            for c in range(col):
+                if board[r][c] > 0:
+                    board[r][c] = 1
+                else:
+                    board[r][c] = 0      
+            
+        """
+        Do not return anything, modify board in-place instead.
+        """
+        """
+        if number of live neighbour:
+          == 1,0 then live die,dead keep dead
+          == 2, then live live,dead keep dead
+          == 3, then live live dead live
+          == 4,5,6,7,8 then live dead,dead keep dead
+        """
+
+        
+        
+        
