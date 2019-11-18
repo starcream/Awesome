@@ -1,0 +1,59 @@
+Leetcode 202
+
+Write an algorithm to determine if a number is "happy".
+
+A happy number is a number defined by the following process: Starting with any positive integer, 
+replace the number by the sum of the squares of its digits, and repeat the process until the number equals 1 (where it will stay), 
+or it loops endlessly in a cycle which does not include 1. Those numbers for which this process ends in 1 are happy numbers.
+
+Example: 
+
+Input: 19
+Output: true
+Explanation: 
+12 + 92 = 82
+82 + 22 = 68
+62 + 82 = 100
+12 + 02 + 02 = 1
+
+我的方法。有可能无限循环，那么记录已经遍历过的数
+class Solution:
+    def isHappy(self, n: int) -> bool:
+        D = []
+        while True:
+            if n in D:
+                return False
+            D.append(n)
+            ans = 0
+            while n/10 != 0:
+                ans += (n%10)**2
+                n = int(n/10)
+            ans += n**2
+            ans = int(ans)
+            if ans == 1:
+                return True
+            else:
+                n = ans
+             
+有一种类似找链表有环的方法。快慢指针。迟早再次相遇。也是很巧妙
+int digitSquareSum(int n) {
+        int sum = 0, tmp;
+        while (n) {
+            tmp = n % 10;
+            sum += tmp * tmp;
+            n /= 10;
+        }
+        return sum;
+    }
+    
+    bool isHappy(int n) {
+        int slow, fast;
+        slow = fast = n;
+        do {
+            slow = digitSquareSum(slow);
+            fast = digitSquareSum(fast);
+            fast = digitSquareSum(fast);
+            if(fast == 1) return 1;
+        } while(slow != fast);
+         return 0;
+}
