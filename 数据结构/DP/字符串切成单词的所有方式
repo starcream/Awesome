@@ -1,0 +1,98 @@
+leetcode 140
+
+Given a non-empty string s and a dictionary wordDict containing a list of non-empty words, add spaces in s to construct a sentence where each word is a valid dictionary word. Return all such possible sentences.
+
+Note:
+
+The same word in the dictionary may be reused multiple times in the segmentation.
+You may assume the dictionary does not contain duplicate words.
+Example 1:
+
+Input:
+s = "catsanddog"
+wordDict = ["cat", "cats", "and", "sand", "dog"]
+Output:
+[
+  "cats and dog",
+  "cat sand dog"
+]
+Example 2:
+
+Input:
+s = "pineapplepenapple"
+wordDict = ["apple", "pen", "applepen", "pine", "pineapple"]
+Output:
+[
+  "pine apple pen apple",
+  "pineapple pen apple",
+  "pine applepen apple"
+]
+Explanation: Note that you are allowed to reuse a dictionary word.
+Example 3:
+
+Input:
+s = "catsandog"
+wordDict = ["cats", "dog", "sand", "and", "cat"]
+Output:
+[]
+
+
+我的DP解法。首先判断是否可分。这个比较快。如果不可分，就不要浪费时间去DP了
+接下来。f[i]表示s[0:i+1]能够被拆成的所有字符串。这个方法不快，但是用的空间不多
+class Solution:
+    def wordBreak(self, s: str, wordDict: List[str]) -> List[str]:
+        n = len(s)
+        # b[i] measn if we can obtain any string
+        b = [False for x in range(n)]
+        for i in range(n):
+            if s[0:i+1] in wordDict:
+                b[i] = True
+            else:
+                for j in range(i):
+                    if b[j] == True and s[j+1:i+1] in wordDict:
+                        b[i] = True
+                        break
+        if b[n-1] == False:
+            return []
+        # f[i] means the strings end at i , contained in a list
+        f = {x:[] for x in range(n) }
+        
+        for i in range(0, n):  # i in [0, n-1]
+            if s[0:i+1] in wordDict:   # the string itself
+                f[i].append(s[0:i+1])  # split into two half
+            for j in range(i):   # j in [0, i-1]
+                if len(f[j])!=0 and s[j+1:i+1] in wordDict:
+                    for x in f[j]:
+                        f[i].append(x+' '+s[j+1:i+1])
+        return f[n-1]
+        
+  如果使用递归的方法，要注意避免重复劳动。也就是拆过的字符串用hashmap保存起来。可以看成DFS吧。这样看，序列问题，DP和DFS不过是
+  迭代与递归的差异。
+  public class Solution {
+    HashMap<String,List<String>> map = new HashMap<String,List<String>>();
+    public List<String> wordBreak(String s, Set<String> wordDict) {
+        List<String> res = new ArrayList<String>();
+        if(s == null || s.length() == 0) {
+            return res;
+        }
+        if(map.containsKey(s)) {
+            return map.get(s);
+        }
+        if(wordDict.contains(s)) {
+            res.add(s);
+        }
+        for(int i = 1 ; i < s.length() ; i++) {
+            String t = s.substring(i);
+            if(wordDict.contains(t)) {
+                List<String> temp = wordBreak(s.substring(0 , i) , wordDict);
+                if(temp.size() != 0) {
+                    for(int j = 0 ; j < temp.size() ; j++) {
+                        res.add(temp.get(j) + " " + t);
+                    }
+                }
+            }
+        }
+        map.put(s , res);
+        return res;
+    }
+}
