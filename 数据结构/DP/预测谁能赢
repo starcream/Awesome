@@ -1,0 +1,77 @@
+Leetcode 486
+Given an array of scores that are non-negative integers. Player 1 picks one of the numbers from either end of the array followed by the player 2 and then player 1 and so on. Each time a player picks a number, that number will not be available for the next player. This continues until all the scores have been chosen. The player with the maximum score wins.
+
+Given an array of scores, predict whether player 1 is the winner. You can assume each player plays to maximize his score.
+
+Example 1:
+Input: [1, 5, 2]
+Output: False
+Explanation: Initially, player 1 can choose between 1 and 2. 
+If he chooses 2 (or 1), then player 2 can choose from 1 (or 2) and 5. If player 2 chooses 5, then player 1 will be left with 1 (or 2). 
+So, final score of player 1 is 1 + 2 = 3, and player 2 is 5. 
+Hence, player 1 will never be the winner and you need to return False.
+Example 2:
+Input: [1, 5, 233, 7]
+Output: True
+Explanation: Player 1 first chooses 1. Then player 2 have to choose between 5 and 7. No matter which number player 2 choose, player 1 can choose 233.
+Finally, player 1 has more score (234) than player 2 (12), so you need to return True representing player1 can win.
+Note:
+1 <= length of the array <= 20.
+Any scores in the given array are non-negative integers and will not exceed 10,000,000.
+If the scores of both players are equal, then player 1 is still the winner.
+
+我的方法。二维DP。P代表[i,j]区间内先手拿(钱)的人能拿到的最大值，Q代表后手能拿到的值
+class Solution:
+    def PredictTheWinner(self, nums: List[int]) -> bool:
+        # 1 200 9 28 89 89 98 2 34 888 0 1 38 99
+        # P[i][j]: the most score P1 can get if P1 pick first in [i,j]
+        # Q[i][j]: the score the later guy could get in [i,j]
+        n = len(nums)
+        if n <= 2:
+            return True
+        P = [[-1 for x in nums] for x in nums]
+        Q = [[-1 for x in nums] for x in nums]
+        for i in range(n-1):
+            P[i][i+1] = max(nums[i], nums[i+1])
+            Q[i][i+1] = min(nums[i], nums[i+1])
+        # we want to know if P[0][n-1] >= Q[0][n-1]
+        for step in range(2, n):
+            for i in range(0, n-step):
+                P[i][i+step] = max(nums[i]+Q[i+1][i+step], nums[i+step]+Q[i][i+step-1]) 
+                if P[i][i+step] == nums[i]+Q[i+1][i+step]: # start is picked
+                    Q[i][i+step] = P[i+1][i+step]
+                else:  # end is picked
+                    Q[i][i+step] = P[i][i+step-1]     
+        return P[0][n-1] >= Q[0][n-1]
+                    
+  有一种方法，计算[i,j]内先手拿钱比后手拿钱能多拿多少钱。这个值如果是非负，就说明先手拿划算 
+  public boolean PredictTheWinner(int[] nums) {
+    int n = nums.length;
+    int[][] dp = new int[n][n];
+    for (int i = 0; i < n; i++) { dp[i][i] = nums[i]; }
+    for (int len = 1; len < n; len++) {
+        for (int i = 0; i < n - len; i++) {
+            int j = i + len;
+            dp[i][j] = Math.max(nums[i] - dp[i + 1][j], nums[j] - dp[i][j - 1]);
+        }
+    }
+    return dp[0][n - 1] >= 0;
+}
+
+还有一维空间的做法。因为DP递推只用到了同行前一列和同列下一行。那么考虑一维。行信息每次利用旧值即可。dp[]表示以e结尾的先手赚的钱。
+s（start）开始位置是逐渐递减的，所以dp[e]代表选取了s后所要牺牲的差值。dp[e-1]每次新更新。代表如果选了e之后所要牺牲的差值。不是
+很能直观理解，但确实是最优方法
+public class Solution {
+    public boolean PredictTheWinner(int[] nums) {
+        int[] dp = new int[nums.length];
+        for (int s = nums.length; s >= 0; s--) {
+            for (int e = s + 1; e < nums.length; e++) {
+                int a = nums[s] - dp[e];
+                int b = nums[e] - dp[e - 1];
+                dp[e] = Math.max(a, b);
+            }
+        }
+        return dp[nums.length - 1] >= 0;
+    }
+}
+            
