@@ -1,4 +1,4 @@
-预处理-[语法检查-二进制文件(.o)]-连接所有文件和库(.out)
+[0] 预处理-[语法检查-二进制文件(.o)]-连接所有文件和库(.out)
 [1] 
 cin >> age; cout , cerr
 a.out > output.txt
@@ -15,6 +15,19 @@ cout.put(char)
 
 [4]
 cin.clear()
-cin.ignore(200, '\n')
+cin.ignore(200, '\n')    // 不读回车，这样输入的时候就可以多行输入了
+cin.ignore() == cin.ignore(1, EOF)  --> 会丢掉一个字符
+
+[5] 格式化输出(浮点数)
+cout.setiosflags(ios::fixed)
+cout.setiosflags(ios::showpoint)
+cout.setprecision(2) // 保留两位小数
+
+cout<<setw(15)<<.......   
+cout<<setw(15)<<setfill('*')<<.....
+
+[6]
+文件读写
+
 
 
