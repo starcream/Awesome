@@ -1,5 +1,20 @@
 预处理-[语法检查-二进制文件(.o)]-连接所有文件和库(.out)
-预处理 - #include, #ifndef, #define  
+[1] 
+cin >> age; cout , cerr
+a.out > output.txt
+all output will be sent to file 'output.txt' except those from cerr
 
+[2]
+cin.getline reads one whole line into a char array
+char name[30];
+cin.getline(name, 30, '\n');  // the '\n' is read and replaced with '\0'
+
+[3]
+cin.get(a)  // can read whitespace characters while 'cin>>' can't
+cout.put(char)
+
+[4]
+cin.clear()
+cin.ignore(200, '\n')
 
 
