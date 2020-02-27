@@ -1,0 +1,14 @@
+《Python re 模块》
+re.match(pattern, string)  # 从头开始匹配，成功返回匹配成功的对象，否则返回None
+re.search(pattern, string) # 找到第一个，否则返回None
+re.sub
+re.findall(pattern, string, start_pos, end_pos)
+re.split(pattern, string, maxsplit)
+. 匹配任意字符
+\d 匹配任意数字
+\D 匹配任意非数字
+\s 匹配任意空白字符
+\w 匹配字母数字及下划线
++ 1或多个
+* 0或多个
+()分组
