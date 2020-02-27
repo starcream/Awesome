@@ -28,6 +28,10 @@ cout<<setw(15)<<setfill('*')<<.....
 
 [6]
 文件读写
+ifstream fin;
+fin.open("....");
+if(!fin.good())
+  cerr<<"....";
 
 
 
