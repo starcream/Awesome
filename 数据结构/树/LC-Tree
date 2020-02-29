@@ -131,6 +131,19 @@ class Solution:
             root.right = self.constructFromPrePost(pre[idx+2:], post[idx+1:-1])
             return root
 
+还有O(N)的解法。已知先序和后序，先序的root必然是后序的结尾。使用双指针，依次创建节点，如果节点值和post指针值相同，说明树建完了。
+否则，就依次在内部递归建立左子树和右子树
+int preIndex = 0, posIndex = 0;
+    TreeNode* constructFromPrePost(vector<int>& pre, vector<int>& post) {
+        TreeNode* root = new TreeNode(pre[preIndex++]);
+        if (root->val != post[posIndex])
+            root->left = constructFromPrePost(pre, post);
+        if (root->val != post[posIndex])
+            root->right = constructFromPrePost(pre, post);
+        posIndex++;
+        return root;
+    }
+    
 ----LC1028. Recover a Tree From Preorder Traversal ---- ** (难）
 Input: "1-2--3--4-5--6--7"
 Output: [1,2,5,3,4,6,7]   
