@@ -44,3 +44,27 @@ public:
         else return (firstQ.size() > secQ.size())? firstQ.top():secQ.top(); 
     }
 };
+-----------------
+    另一种解法，每次先加小一侧的堆，然后再进贡最大的给大一侧的堆；这样子大一侧的堆肯定会多，那么再给最小的给小一侧的堆，其实差不多，
+    只是支持数的范围大一点
+    class MedianFinder {
+    priority_queue<long> small, large;
+public:
+
+    void addNum(int num) {
+        small.push(num);
+        large.push(-small.top());
+        small.pop();
+        if (small.size() < large.size()) {
+            small.push(-large.top());
+            large.pop();
+        }
+    }
+
+    double findMedian() {
+        return small.size() > large.size()
+               ? small.top()
+               : (small.top() - large.top()) / 2.0;
+    }
+};
+
