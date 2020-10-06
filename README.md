@@ -24,6 +24,7 @@
 # ----分治---- #
 
 ## 第k大的数 *
+    LeetCode 215
     partition，而且单边就行，O(n)
 ## 数组连续的最大和 *
     和一些炒股问题类似
@@ -85,6 +86,30 @@
     }
 
 ## 链表部分反转
+    LeetCode92 反转中间m-n的节点
+    走到m，记录断点。然后用普通的链表反转，方向存在问题，需要重连一下两边
+    ListNode* prev = nullptr, *nextTmp=nullptr, *breakpoint=dummy;   
+    while(head){
+        count += 1;
+        if(m != 1 and count == m - 1){
+            breakpoint = head;
+        }
+        if(count >= m && count <=n){
+             // 这里同链表反转
+            nextTmp = head->next;
+            head->next = prev;
+            prev = head;
+            head = nextTmp;
+        }
+        else if (count < m){
+            head = head->next;
+        }else{
+            break;
+        }
+    }
+    breakpoint->next->next = head; //此时的head在n后一位
+    breakpoint->next = prev;   // 此时的prev应该移到breakpoint后
+    return dummy->next;
 
 # ----动态规划---- #
 ## 最长公共子序列  *
@@ -230,6 +255,14 @@
         return root;
     }
 
+## 逐层打印二叉树
+    LeetCode 32
+    逐层 -> 队列
+    之字形 -> 两个栈，每隔一轮换一次添加子节点的方向
+     stack <BinaryTreeNode*> levels[2];
+     if(levels[current].empty())
+         current = 1 - current;
+
 ## 序列化二叉树
 
 ## 反序列化二叉树
@@ -358,10 +391,45 @@
 
 # ----数组与数----
 ##查找数组重复元素 *
-    LeetCode3
+    LeetCode3 & 287
     n个数字，取值于[0,n-1]，至少一个数字重复，找出其中一个
-    利用取值范围，in-place交换值，努力使得i在数组第i位，如果发现第i位已经是i，则重复
+    (1) 利用取值范围，in-place交换值，努力使得i在数组第i位，如果发现第i位已经是i，则重复  O(n)
+    // (2) 求和--溢出风险  // (3) 排序 O(nlgn)
+    // (4) O(n) & O(1) & 不修改数组
+    将其看成一个找链表环入口的问题
+    287题中， 规定 数来自[1-N], 共有N+1个数
+    我们把i->N[i]看成链表里的next
+    没有人指向0，因此0是天然的起点
+    int slow = nums[0];
+	int fast = nums[nums[0]];  // 起点是0，这里应该是各自走了一回
+	while (slow != fast)
+	{
+		slow = nums[slow];
+		fast = nums[nums[fast]];
+	}
+
+	fast = 0;
+	while (fast != slow)
+	{
+		fast = nums[fast];
+		slow = nums[slow];
+	}
+	return slow;
+    // (5)  鸽巢原理，二分查找
+    low = 1
+    high = len(nums)-1
     
+    while low < high:
+        mid = low+(high-low)/2
+        count = 0
+        for i in nums:
+            if i <= mid:
+                count+=1
+        if count <= mid:
+            low = mid+1
+        else:
+            high = mid
+    return low
 
 ##查找数组缺失数 *
     0-n,但是只有n个数，假定只有一个数缺失
@@ -387,11 +455,66 @@
      判断有多少1 -> 是否是2的整数次
      改变2进制的多少位可以由m变成n -> 先异或再数1
 
+## 求无符号数的补数
+     LeetCode 476
+     补数可以用 ~  .但是会造成前面都是1
+      00000101 -> 11111010 
+      我们要的是00000010
+      所以要使前5位区分开
+      int findComplement(int num) {
+        unsigned mask = ~0;
+        while (num & mask) mask <<= 1;   // num&mask找到原数有多少位
+        return ~mask & ~num;
+
+        num          = 00000101
+		mask         = 11111000
+		~mask & ~num = 00000010
+      
+
 ## 统计数组中的逆序对
       剑指offer51
      暴力法是O(n^2)
      分组，统计一组时利用递归出的结果，再进行归并，保证统计完后也是有序的
 
+## 组合和 *
+    Leetcode 39   
+    Target Sum ,有点接近树的路径和
+    设计一个path，递归时push，递归后pop，所谓回溯
+    LeetCode40  
+    数组有重复数字，但每个最多只能用一次，并且最后的结果得unique
+    int prev = -1;
+    for(int i=index-1;i>=0;i--){
+        if(candidates[i]<=target && candidates[i]!=prev){
+            path.push_back(candidates[i]);
+            prev = candidates[i];
+            addPath(candidates, ans, path, target-candidates[i], i);
+            path.pop_back();
+        }
+    }
+
+    LeetCode377  [1,2]和[2,1]算不同的组合，其实是permutation。但是本题只需要个数，不要求列出所有
+    一维dp  O(nM)
+    def combinationSum4(self, nums, target):
+        nums, combs = sorted(nums), [1] + [0] * (target)
+        for i in range(target + 1):
+            for num in nums:
+                if num  > i: break
+                combs[i] += combs[i - num]
+        return combs[target]
+    这个方法看起来优雅，避免了递归，但是计算了很多无用的comb值，而且其中一些target会造成整数上溢
+    自上而下的方法则是有的放矢
+
+## 去除被覆盖的interval
+     LeetCode 1288   [1,5] [2,4]  => [1,5]
+     第一位升序 ，第二位降序  [1,5] [1,3] [2,3]
+     那么作为后来者的你相要被保留下来，必须比前面的右边界大，否则必定被覆盖
+     def removeCoveredIntervals(self, A):
+        res = right = 0
+        A.sort(key=lambda a: (a[0], -a[1]))
+        for i, j in A:
+            res += j > right
+            right = max(right, j)
+        return res
 
 # ----二维矩阵与查找----
 排好序的数组往往适合二分查找
@@ -418,10 +541,46 @@
     pointer == nullptr
      *p == '\0'
     
+## 定制*Compare*
+    凡是有排序的地方往往都可能需要定制Compare
+    set/map/priority_queue/sort/upper_bound/nth_element/min_element
+
+    struct Point { double x, y; };
+    struct PointCmp {
+	    bool operator()(const Point& lhs, const Point& rhs) const { 
+	        return std::hypot(lhs.x, lhs.y) < std::hypot(rhs.x, rhs.y); 
+	    }
+    };
+
+    set<Point, PointCmp> z = {{2, 5}, {3, 4}, {1, 1}};
 
 ## 细节
-    STL中注意通过back()等方法获取元素时要先判断容器是否为空
-    右移运算符 >> 左边补位时如果是无符号用0补，如果有符号，用原先的符号位补。所有如果真想实现除2，用unsigned
+    (1)STL中注意通过back()等方法获取元素时要先判断容器是否为空
+    (2)右移运算符 >> 左边补位时如果是无符号用0补，如果有符号，用原先的符号位补。所有如果真想实现除2，用unsigned
+    (3) 链表头部加入一个dummy-head
+        ListNode N(0);
+        ListNode * dummy = & N;
+        dummy->next = head;
+
+
+## STL
+   [https://blog.csdn.net/weixin_38513406/article/details/108079144](https://blog.csdn.net/weixin_38513406/article/details/108079144 "STL")
+    
+## 稳定排序
+    vector<string> words{"for","first",
+							      "reinterpret","world","element","as"};
+    //对words中的元素按照长度进行排序，具有相同长度的元素相对位置不会改变。
+    stable_sort(words.begin(), words.end(), 
+                 [](const string& s1, const string& s2)
+                 { return s1.size() < s2.size(); });
+## 条件查询
+    int sz =5;   // 找到第一个长度大于5的单词
+    auto divide = std::find_if(words.begin(), words.end(),
+                           [sz](const string& s1){ 
+                               return s1.size() > sz;
+                           });
+
+
 
 # ----Python----
 
