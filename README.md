@@ -111,6 +111,21 @@
     breakpoint->next = prev;   // 此时的prev应该移到breakpoint后
     return dummy->next;
 
+## 旋转链表
+    leetcode61  就是讲链表最右边k个移到前面来。比较标准的写法
+	ListNode* rotateRight(ListNode* head, int k) {
+	    if (!head || !head->next || k == 0) return head;
+	    ListNode *cur = head;
+	    int len = 1;
+	    while (cur->next && ++len) cur = cur->next;  
+	    cur->next = head;   // 尾部连接头，构成环
+	    k = len - k % len;
+	    while (k--) cur = cur->next;
+	    head = cur->next;   // cur是断点
+	    cur->next = nullptr;
+	   return head; 
+	}
+
 # ----动态规划---- #
 ## 最长公共子序列  *
     LeetCode 1143
@@ -529,6 +544,38 @@
 ## 矩阵查找某个数是否存在 *
     行列有序
     左下或者右上起步查询
+
+## 行列各种排序的矩阵查找第k大的数 *
+    一个重要的函数 查找小于等于自己的数
+    def getLessEqual(mid):
+        i = n-1
+        j = 0
+        ans = 0
+        while i >=0 and j <= n-1:
+            if matrix[i][j] > mid:
+                i -= 1;
+            else:
+                ans += (i+1)  (第j列往上都比我小)
+                j += 1
+        return ans
+
+     基于这个函数二分查找
+     O(nlogn)
+    lo = matrix[0][0]
+    hi = matrix[n-1][n-1]
+    
+    while lo <= hi:
+        mid = int(lo + (hi-lo)/2)
+        if getLessEqual(mid) < k:
+            lo = mid+1
+        else:
+            hi = mid-1
+    return lo
+    为何lo一定是矩阵中的元素呢
+    因为当循环，也就是二分查找结束时，hi=lo-1
+    小于等于hi的不足k，而小于等于lo的>=k
+    那显然矩阵中存在k
+
 # ----C++----
 ##字符串反转
     string r;
