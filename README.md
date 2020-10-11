@@ -213,6 +213,7 @@
     如果两边不平衡，最大堆堆顶弹出加入最小堆
 
 ## 高频的K个单词 *
+    LeetCode 692
     频率优先，频率相同则看字母顺序
     typedef pair<string, int> pp;
     struct cmp{
@@ -223,6 +224,20 @@
       }  
     };
     priority_queue<pp, vector<pp>, cmp> q;
+
+    // 高级的写法
+    auto comp = [&](const pair<string,int>& a, const pair<string,int>& b) {
+            return a.second > b.second || (a.second == b.second && a.first < b.first);
+        };
+    typedef priority_queue< pair<string,int>, vector<pair<string,int>>, decltype(comp) > my_priority_queue_t;
+    my_priority_queue_t  pq(comp);
+    
+    for(auto w : freq ){
+        pq.push({w.first, w.second});
+        if(pq.size()>k) pq.pop();
+    }
+    
+
 
 ## 滑动窗口最大值 
     LeetCode 239; 剑指offer59
@@ -404,6 +419,74 @@
     for (char c='A'; c<='z'; c++)
         odds += count(s.begin(), s.end(), c) & 1;
 
+## 合法括号
+    常规的合法括号匹配可以用栈
+    这里看到一道 * 可以匹配 (,),或空的
+    LeetCode 678
+    如果基于*进行递归，会超时
+    下面的方法，cmax表示最多能对上多少右括号，cmin表示必须要对上多少右括号。最后一定要求，cmin在0，cmax>=0
+    bool checkValidString(string s) {
+        int cmin = 0, cmax = 0;
+        for (char c : s) {
+            if (c == '(')
+                cmax++, cmin++;
+            if (c == ')')
+                cmax--, cmin = max(cmin - 1, 0); // 右括号不能领先，因此cmin不能透支，cmax如果小于0立即报错
+            if (c == '*')  // *调节作用，让max冲得更大，让min更接近0
+                cmax++, cmin = max(cmin - 1, 0);  
+            if (cmax < 0) return false;
+        }
+        return cmin == 0;
+    }
+
+## 字符串去重并使得排列最小
+    LeetCode 316
+    "cdadabcc" => "adbc"
+    // 总感觉偏贪婪算法，说实话没做出来
+    string removeDuplicateLetters(string s) {
+        vector<int> dict(256, 0);
+        vector<bool> visited(256, false);
+        for(auto ch : s)  dict[ch]++;
+        string result = "0";   // 避免result.back()问题
+        /** the key idea is to keep a monotically increasing sequence **/
+        for(auto c : s) {
+            dict[c]--;
+            /** to filter the previously visited elements **/
+            if(visited[c])  continue;
+            while(c < result.back() && dict[result.back()]) {   
+                visited[result.back()] = false;   //只要后面还有你们，并且你们优先级低于我，则我要顶替
+                result.pop_back();
+            }
+            result += c;    // 字符串直接与char拼接
+            visited[c] = true;
+        }
+        return result.substr(1);  // 字符串截取
+    }
+
+    另一种方法,每次加一个字符，符合要求的最小字符；
+    def removeDuplicateLetters(self, s):
+    for c in sorted(set(s)):
+        suffix = s[s.index(c):]
+        if set(suffix) == set(s):  // 说明前面的没用了，前面都比我大并且在后缀中还有
+            return c + self.removeDuplicateLetters(suffix.replace(c, ''))  // 我也不要干扰后面的字符 
+    return ''
+
+# ----Mark一下贪婪----
+	Any problem can be solved using dp. Solving using a greedy strategy is harder though, since you need to prove that greedy will work for that problem. There are some tell-tale signs of a problem where greedy may be applicable, but isn't immediately apparent. Example:
+	
+	Choice of an element depends only on its immediate neighbours (wiggle sort).
+	Answer is monotonically non-decreasing or non-increasing (sorting). This is also applicable for LIS for example.
+	Anything that requires lexicographically largest or smallest of something.
+	Anything where processing the input in sorted order will help.
+	Anything where processing the input in forward or reverse (as given) will help.
+	Anything which requires you to track the minimum or maximum of something (think of sliding window problems).
+	There's matroid theory which deal with greedy algorithms, but I don't really understand it. If someone does, I'll be super grateful to them to explain it to me in simple language!
+	
+	In general, try to see if for a problem, the solution doesn't depend on a lot of history about the solution itself, but the next part of the solution is somewhat independent from the rest of the solution. These are all indicative of the fact that a greedy strategy could be applicable
+
+
+
+
 # ----数组与数----
 ##查找数组重复元素 *
     LeetCode3 & 287
@@ -445,6 +528,19 @@
         else:
             high = mid
     return low
+
+
+## 删除有序数组中的重复元素(每个元素至多保留k个)
+      in_place修改
+      [1,1,1,2,2,3,3,3,4]
+      int removeDuplicates(vector<int>& nums) {
+      int i = 0;
+      for (int n : nums)
+          if (i < k || n > nums[i-k])
+              nums[i++] = n;
+       return i;
+      }
+      
 
 ##查找数组缺失数 *
     0-n,但是只有n个数，假定只有一个数缺失
@@ -575,6 +671,37 @@
     因为当循环，也就是二分查找结束时，hi=lo-1
     小于等于hi的不足k，而小于等于lo的>=k
     那显然矩阵中存在k
+
+
+## 孤岛问题 *
+    LeetCode 130 Surrounded Regions 稍微麻烦一点，要求将所有closed islands反转，不closed的不变。正确解法应该从边缘岛屿入手，先将其变为'*'。然后将剩余岛屿反转。最后将'*'变回岛屿。
+    LeetCode 200 Number of islands 
+       BFS/DFS 注意及时将遍历过的点更改颜色; 注意如果使用DFS递归，写起来更方便，因为可以将边界判断放到函数头部
+    LeetCode 1254 Number of closed islands  同上，easy
+    LeetCode 695 Max Area of island  同上，easy
+    LeetCode 934 Shortest Bridge  确定有两个岛屿，最少需要建多长的桥才能将其连接
+    将其中一个岛屿变色并不难，如果对两个岛屿之间各点两两求距离，慢，期望是O(n^2)，即便两岛离得很近，只要岛屿大，都要计算很多次
+    通过膨胀（expand）其中一个岛屿来找寻最短距离
+
+
+    bool expand(vector<vector<int>>& A, int i, int j, int cl) {
+	    if (i < 0 || j < 0 || i == A.size() || j == A.size()) return false;
+	    if (A[i][j] == 0) A[i][j] = cl + 1;
+	    return A[i][j] == 1;
+    }  // 一个岛为1，一个岛为2，
+    int shortestBridge(vector<vector<int>>& A) {
+	    for (int i = 0, found = 0; !found && i < A.size(); ++i)
+	        for (int j = 0; !found && j < A[0].size(); ++j) found = paint(A, i, j);
+	    
+	    for (int cl = 2; ; ++cl)  膨胀2岛
+	        for (int i = 0; i < A.size(); ++i)
+	            for (int j = 0; j < A.size(); ++j) 
+	                if (A[i][j] == cl && ((expand(A, i - 1, j, cl) || expand(A, i, j - 1, cl) || 
+	                    expand(A, i + 1, j, cl) || expand(A, i, j + 1, cl))))
+	                        return cl - 2;
+	}
+
+    LeetCode 463 island Perimeter
 
 # ----C++----
 ##字符串反转
