@@ -111,6 +111,29 @@
     breakpoint->next = prev;   // 此时的prev应该移到breakpoint后
     return dummy->next;
 
+## 链表排序
+    leetcode148
+    quicksort || merge sort
+    (在链表排序中，很难用random的pivot，所以效果会差一点）
+    (而在链表中，归并排序不存在数组重新复制的问题，链表的合并是如此方便和高效)
+	ListNode merge(ListNode list1, ListNode list2) {
+        ListNode dummyHead = new ListNode();
+        ListNode tail = dummyHead;
+        while (list1 != null && list2 != null) {
+            if (list1.val < list2.val) {
+                tail.next = list1;
+                list1 = list1.next;
+                tail = tail.next;
+            } else {
+                tail.next = list2;
+                list2 = list2.next;
+                tail = tail.next;
+            }
+        }
+        tail.next = (list1 != null) ? list1 : list2;
+        return dummyHead.next;
+
+
 ## 旋转链表
     leetcode61  就是讲链表最右边k个移到前面来。比较标准的写法
 	ListNode* rotateRight(ListNode* head, int k) {
@@ -180,6 +203,28 @@
       LeetCode494
       给定数组，允许用+和-,求有多少种达到目标和的方式  
       很容易联想到递归--有记忆递归--自底向上DP  dp[index][sum]
+
+## House Robber
+    LeetCode 198 & 213 & 337
+    前两题算是dp。规定小偷不能偷相邻两家的钱，最多偷多少钱
+    就按照偷不偷此前一家来  pp,p,cur表示截止上上一家，上一家，当前一家最多偷多少钱
+    cur = max(pp+nums[i], p);
+    pp = p;
+    p = cur;
+    第三题有点难度，换成二叉树的格式
+    要避免重复递归，但是右很难自底向上dp
+    解法是，按照偷不偷当前节点，返回两个最大值
+    pair<int, int> visit(TreeNode* root){
+        // return two vals, the maximum of this tree (visiting the root or not)
+        if(!root){
+            return {0,0};
+        }
+        pair<int, int> l,r;
+        l = visit(root->left);
+        r = visit(root->right);
+        return {root->val+l.second+r.second, max(l.first,l.second)+max(r.second,r.first)};
+    }
+
 
 # ----栈\队列\堆-----
 
