@@ -672,6 +672,28 @@
             right = max(right, j)
         return res
 
+## 旋转数组
+    LeetCode 189
+    方法1：O(1)空间，O(n)时间，in_place
+    逐个向右移k，必然会移到开始点。此时不一定移完了所有，需要右移开始点
+    int count = 0 ,start_pos=0, next_pos=0, prev=0, tmp=0;
+    for(int i=0; count < n; i++){
+        start_pos = i, next_pos = start_pos+k, prev = nums[start_pos];
+        while(start_pos!=next_pos){
+            tmp = nums[next_pos];
+            nums[next_pos] = prev; 
+            prev = tmp;
+            next_pos += k;
+            next_pos %= n;
+            count ++;
+        }
+        nums[next_pos] = prev;  // 回到开始点后，不要忘了给开始点赋新值
+        count ++;
+    }
+    方法2：
+    同字符串的左旋转，先reverse前后相应部分，再整体reverse；也可以先整体reverse，再部分reverse
+
+
 # ----二维矩阵与查找----
 排好序的数组往往适合二分查找
 ## 查找某个单词是否存在于一个字符矩阵中 *
