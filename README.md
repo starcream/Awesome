@@ -199,6 +199,27 @@
             sell[i] = Math.max(sell[i - 1], buy[i - 1] + prices[i]); // keep the same as day i-1, or sell from buy status at day i-1
         }
 
+## 股票买卖(限制交易次数，无冷却)
+     LeetCode188
+      1. 算是贪婪法
+     找出所有的不相交上升区间，如果无交易次数限制，低点买入高点售出就行
+     可惜有次数限制，因此可能需要删除上升区间或者合并相邻的上升区间。注意边界情况，第一个低谷点和最后一个峰点。注意股票价格不变的情况，低谷点一定要比后一天小；峰点一定要比前一天大，不在乎后一天是否等。注意删除vector时，利用
+     v.erase(v.begin()+idx)
+     时间复杂度  ：  最差O(n^2)
+      2. DP
+      dp[i][j] 截止第j天进行i次交易能够得到的最大利润
+      如果第j天不卖， dp[i][j] = dp[i][j-1]
+      如果第j天卖了，前面必然有一天t买了，dp[i][j] = max(dp[i-1][t-1] + price[j]-price[t])
+      这样的复杂度 O(k) * O(n) * O(n)
+      不过在j天循环的维度，可以利用dp[i-1][j-1]-price[j]作为后来者可以利用的dp[i-1][t-1] - price[t]
+      for i : 1 -> k
+      maxTemp = -prices[0];
+	      for j : 1 -> n-1
+	         dp[i][j] = max(dp[i][j-1], prices[j]+maxTemp);
+	         maxTemp = max(maxTemp, dp[i-1][j-1]-prices[j]); // 第j天买入 
+      return dp[k][n-1];
+
+
 ## 目标和
       LeetCode494
       给定数组，允许用+和-,求有多少种达到目标和的方式  
@@ -483,6 +504,48 @@
         }
         return cmin == 0;
     }
+
+## 重复DNA(字符串)序列
+    子串长度固定，找重复的子串
+     def findRepeatedDnaSequences(self, s: str) -> List[str]:
+        # turn all possible string into int and sort，用2个bit去表示一个数
+        length = len(s)
+        d = []
+        r = {}
+        for i in range(0, len(s)-9):
+            cur = 1
+            for j in range(0, 10):
+                if s[i+j]=='A':
+                    cur<<=2
+                if s[i+j]=='C':
+                    cur<<=2
+                    cur+=1
+                if s[i+j]=='G':
+                    cur<<=2
+                    cur+=2
+                if s[i+j]=='T':
+                    cur<<=2
+                    cur+=3
+            d.append(cur)
+            r[cur]=i
+        d.sort()
+        c = Counter(d)
+        return [s[r[x]:r[x]+10] for x,v in c.items() if v>1]
+
+      C++版本，用三个bit去表示一个数。 因为在ASCII表中，A is 0101, C is 0103, G is 0107, T is 0124. The last digit in octal are different for all four letters. That's all we need!  ch & 7 ==> 就可以直接区分四个字母，不需要if，else
+      	vector<string> findRepeatedDnaSequences(string s) {
+	    unordered_map<int, int> m;
+	    vector<string> r;
+	    int t = 0, i = 0, ss = s.size();
+	    while (i < 9)   // 初始化t
+	        t = t << 3 | s[i++] & 7;
+	    while (i < ss)
+	        if (m[t = t << 3 & 0x3FFFFFFF | s[i++] & 7]++ == 1)  // 掩码设置为30位是因为，最左两位是不用的，每次存10个数，30位；左移之后先损失一位，再消掉2位，相当于去掉一个数；通过并在加上一个数
+	            r.push_back(s.substr(i - 10, 10));
+	    return r;
+	}
+
+
 
 ## 字符串去重并使得排列最小
     LeetCode 316
